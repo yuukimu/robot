@@ -5,6 +5,9 @@ unsigned long interval; //Echoのパルス幅
 unsigned long timeInit, timeStart, timeNow, timeEnd;
 int mode = 0;
 int count = 0;
+int inByte;   // 送信要求を確認
+
+void send_data(unsigned long data);
 
 void setup(){
   pinMode(trig, OUTPUT); // 7番ポートを出力に設定
@@ -40,16 +43,11 @@ void loop(){
     //delay(200);
   }
   else if(l <= DISTANCE && l != 0 && mode == 2){
-  // mode = 3;
-  //}
-  //else if(l > DISTANCE && mode == 3){
     count++;
     if(count >= 4){
       timeEnd = timeNow - timeStart; 
       //Serial.print("GOAL: ");
-      Serial.write('H');
-      Serial.write(timeEnd >> 8);
-      Serial.write(timeEnd & 8);
+      send_data(timeEnd); // Processingにデータを送信
       delay(700);
       mode = 0;
       count = 0;
@@ -57,12 +55,18 @@ void loop(){
   } 
   else if(mode == 2){
     timeNow = millis() - timeInit;
-    Serial.write('H');
-    Serial.write(timeNow >> 8);
-    Serial.write(timeNow & 8);
-    delay(100);
+    send_data(timeNow);
   }
   else{
     count = 0;
+  }
+}
+
+void send_data(unsigned long data){
+  if(Serial.available() > 0){
+    inByte = Serial.read();
+    Serial.write('H');
+    Serial.write(data >> 8);
+    Serial.write(data & 8);
   }
 }

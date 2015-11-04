@@ -1,6 +1,6 @@
 import processing.serial.*;
 Serial port;
-long time;
+int time;
 
 void setup() {
   size(500, 500);
@@ -13,12 +13,14 @@ void setup() {
 void draw() {
   background(255);
   text(time, 200, 200);
+  port.write('A');
 }
+
 void serialEvent(Serial p){
   if(p.available() >= 3){
     if(p.read() == 'H'){
-      long x = p.read(), y = p.read();
-      time = (long)(x<<8|y);
+      int x = p.read(), y = p.read();
+      time = (int)(x<<8|y);
     }
     //port.clear();
   }
