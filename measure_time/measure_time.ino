@@ -63,7 +63,7 @@ void loop(){
 }
 
 void send_data(unsigned long data){
-  if(Serial.available() > 0){
+  if(Serial.available() > 0 || inByte == 0){
     inByte = Serial.read();
     Serial.write('H');
     Serial.write(data >> 8);
