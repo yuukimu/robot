@@ -12,7 +12,7 @@ void setup() {
   background(255);
   strokeWeight(10);
   textSize(25);
-  port = new Serial(this,"/dev/tty.usbserial-AL00FMHT",57600); 
+  port = new Serial(this,"/dev/tty.usbserial-A400FRLO",9600); 
   port.clear();
 
 }
@@ -36,7 +36,7 @@ void draw() {
 
 void serialEvent(Serial p) { 
   if (p.available() >= 3) {
-    if(p.read() == 'S'){
+    if(p.read() == 'H'){
       int h = p.read(), l = p.read();
       azimuth = (int)(h<<8|l); if(azimuth > 32767) azimuth -= 65536;
     } 

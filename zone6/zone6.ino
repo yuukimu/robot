@@ -12,11 +12,12 @@ Pushbutton button(ZUMO_BUTTON);
 LSM303 compass;
 float azimuth = 0;
 int inByte = 0;
+int motorR_G, motorL_G;
 
 void setup() {
   LSM303::vector<int16_t> running_min = {32767, 32767, 32767}, running_max = {-32767, -32767, -32767};
   unsigned char index;
-  Serial.begin(57600); // シリアル通信の初期化
+  Serial.begin(9600); // シリアル通信の初期化
   Wire.begin(); // 無線通信の初期化
   compass.init();
   compass.enableDefault();
@@ -68,15 +69,15 @@ void loop() {
 
   azimuth = averageHeading(); /* 課題 8.2.2 で使用,Compass 参照 */
   send_print(); // センサーの値をProcessingに送信
-  // motors.setLeftSpeed(200); // 左タイヤの速度を設定
-  // motors.setRightSpeed(-200); // 右タイヤの速度を設定
+  motors.setLeftSpeed(200); // 左タイヤの速度を設定
+  motors.setRightSpeed(200); // 右タイヤの速度を設定
   delay(10);
 }
 
 void send_print(void) {
   if(Serial.available() > 0 || inByte == 0){
     inByte = Serial.read();
-    Serial.write('S');
+    Serial.write('H');
     Serial.write((int)(azimuth) >> 8);
     Serial.write((int)(azimuth) & 255);
   }
@@ -108,4 +109,3 @@ float averageHeading()
 
   return heading(avg);
 }
-

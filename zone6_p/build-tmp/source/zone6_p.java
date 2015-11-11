@@ -30,7 +30,7 @@ public void setup() {
   background(255);
   strokeWeight(10);
   textSize(25);
-  port = new Serial(this,"/dev/tty.usbserial-AL00FMHT",57600); 
+  port = new Serial(this,"/dev/tty.usbserial-A400FRLO",9600); 
   port.clear();
 
 }
@@ -43,9 +43,9 @@ public void draw() {
   if(azimuth != -1){
     //line(position_x , position_y, (position_x)+sin(radians(360-azimuth)), (position_y)+2*cos(radians(360-azimuth)));
     point(position_x, position_y);
-    if(position_x-20 > 0 && position_x+20 < stage_w)
+    //if(position_x-20 > 0 && position_x+20 < stage_w)
       position_x += 4*sin(radians(360-azimuth));
-    if(position_y-20 > 0 && position_y+20 < stage_h)
+    //if(position_y-20 > 0 && position_y+20 < stage_h)
       position_y += 4*cos(radians(360-azimuth));
     port.write('A');
   }
@@ -54,7 +54,7 @@ public void draw() {
 
 public void serialEvent(Serial p) { 
   if (p.available() >= 3) {
-    if(p.read() == 'S'){
+    if(p.read() == 'H'){
       int h = p.read(), l = p.read();
       azimuth = (int)(h<<8|l); if(azimuth > 32767) azimuth -= 65536;
     } 
