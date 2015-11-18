@@ -1,6 +1,7 @@
-#define DISTANCE 20
+#define DISTANCE 45
 const int trig = 7; //Trig ピンをデジタル 7 番に接続
 const int echo = 8;  //Echo ピンをデジタル 8 番に接続
+const int power = 11; //Vccを13番に接続
 unsigned long interval; //Echoのパルス幅
 unsigned long timeInit, timeStart, timeNow, timeEnd;
 int mode = 0;
@@ -11,25 +12,38 @@ void send_data(unsigned long data);
 
 void setup(){
   pinMode(trig, OUTPUT); // 7番ポートを出力に設定
-  pinMode(echo, INPUT); // 8番ポートを入力に設定
+  pinMode(echo, INPUT); // 8番ポートを入力に設定™
+  pinMode(power, OUTPUT);
+  digitalWrite(power, HIGH);
   Serial.begin(9600);
   timeInit = millis();
 }
 
 void loop(){
+  static bool skip = true;
   int sensorValue = analogRead(A0);
   float vo = sensorValue * (5.0/1024.0);
   float temp = (vo*1000-600)/10;
   digitalWrite(trig, HIGH); //10μs のパルスをセンサーに入力
-  delayMicroseconds(16);
+  delayMicroseconds(10);
   digitalWrite(trig, LOW); // 7番ポートにLOWを出力
   
-  interval = pulseIn(echo, HIGH, 500000);  //Echo信号がHIGHである時間(μs)を計測
+  interval = pulseIn(echo, HIGH, 18000);  //Echo信号がHIGHである時間(μs)を計測
   double c = 331.5 + 0.61 * temp; // 音速を25℃の場合に設定
   float l = c * interval / 10000 / 2; // 距離を計測(cm)
-
+/*
+  if(skip == true){
+    skip = false;
+  } else{
+    if( l == 0){
+      digitalWrite(power, LOW);
+      delay(10);
+      digitalWrite(power, HIGH);
+      skip = true;
+    }
+  }
+*/
   if(l <= DISTANCE && l != 0 && mode == 0){
-    Serial.println("aaa");
     count++;
     if(count >= 10){
       mode = 1;
@@ -40,7 +54,7 @@ void loop(){
     //Serial.println("START!!");
     timeStart = millis() - timeInit;
     mode = 2;
-    //delay(200);
+    delay(300);
   }
   else if(l <= DISTANCE && l != 0 && mode == 2){
     count++;
@@ -55,7 +69,7 @@ void loop(){
   } 
   else if(mode == 2){
     timeNow = millis() - timeInit;
-    send_data(timeNow);
+    send_data(timeNow-timeStart);
   }
   else{
     count = 0;

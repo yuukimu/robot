@@ -32,7 +32,7 @@ public void setup() {
   println(Serial.list());
   // String arduinoPort = Serial.list()[1];
   // port = new Serial(this, arduinoPort, 9600 );
-  port = new Serial(this, "/dev/tty.usbmodem-A9017462", 9600 ); // \u30b7\u30ea\u30a2\u30eb\u30dd\u30fc\u30c8\u540d\u306f\u5404\u81ea\u306e\u74b0\u5883\u306b\u5408\u308f\u305b\u3066\u9069\u5b9c\u6307\u5b9a
+  port = new Serial(this, "/dev/tty.usbserial-A400FRLO", 9600 ); // \u30b7\u30ea\u30a2\u30eb\u30dd\u30fc\u30c8\u540d\u306f\u5404\u81ea\u306e\u74b0\u5883\u306b\u5408\u308f\u305b\u3066\u9069\u5b9c\u6307\u5b9a
   zoneNumber = 0;
   red_p = 0; 
   green_p = 0; 
@@ -111,7 +111,6 @@ public void serialEvent(Serial p) { // p is anonymous
 
   //  port.write("A");
 }
-
   public void settings() {  size(1200, 400); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "Integrate_P" };
