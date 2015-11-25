@@ -1,7 +1,7 @@
-#define DISTANCE 45
+#define DISTANCE 40
 const int trig = 7; //Trig ピンをデジタル 7 番に接続
 const int echo = 8;  //Echo ピンをデジタル 8 番に接続
-const int power = 11; //Vccを13番に接続
+//const int power = 13; //Vccを13番に接続
 unsigned long interval; //Echoのパルス幅
 unsigned long timeInit, timeStart, timeNow, timeEnd;
 int mode = 0;
@@ -13,8 +13,8 @@ void send_data(unsigned long data);
 void setup(){
   pinMode(trig, OUTPUT); // 7番ポートを出力に設定
   pinMode(echo, INPUT); // 8番ポートを入力に設定™
-  pinMode(power, OUTPUT);
-  digitalWrite(power, HIGH);
+  // pinMode(power, OUTPUT);
+  //digitalWrite(power, HIGH);
   Serial.begin(9600);
   timeInit = millis();
 }
@@ -43,8 +43,9 @@ void loop(){
     }
   }
 */
-  if(l <= DISTANCE && l != 0 && mode == 0){
+  if(l <= DISTANCE && l > 0 && mode == 0){
     count++;
+    //Serial.println("count+");
     if(count >= 10){
       mode = 1;
       count = 0;
@@ -56,7 +57,7 @@ void loop(){
     mode = 2;
     delay(300);
   }
-  else if(l <= DISTANCE && l != 0 && mode == 2){
+  else if(l <= DISTANCE && l > 0 && mode == 2){
     count++;
     if(count >= 4){
       timeEnd = timeNow - timeStart; 
@@ -70,6 +71,7 @@ void loop(){
   else if(mode == 2){
     timeNow = millis() - timeInit;
     send_data(timeNow-timeStart);
+    //Serial.println(l);
   }
   else{
     count = 0;

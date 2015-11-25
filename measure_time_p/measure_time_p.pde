@@ -14,7 +14,7 @@ void setup() {
 }
     
 void draw() {
-//  a = time / 1000;
+//  a = time / 1000;Serial.println(l); 
   t = (float)time / 1000.0;
   str = nf(t, 2, 2);
   String[] ary  = split(str, ".");
