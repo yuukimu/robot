@@ -22,10 +22,11 @@ int time = 0;
 float a=0.0f, b=0.0f;
 float t = 0.0f;
 String str, str1, str2;
+int startFlag = 0;
 
 public void setup() {
   
-  port = new Serial(this, "/dev/tty.usbmodem1421", 9600);
+  port = new Serial(this, "/dev/tty.usbmodem1411", 9600);
   port.clear();
   textSize(40);
   fill(0);
@@ -37,17 +38,22 @@ public void draw() {
   str = nf(t, 2, 2);
   String[] ary  = split(str, ".");
   background(255);
+  if(startFlag == 1){
+    text("START", 100, 100, 140, 100);
+  }
   text(ary[0]+":"+ary[1], 200, 200, 200, 200);
 //  text(a+":"+b, 200, 200);
-  port.write('A');
 }
 
 public void serialEvent(Serial p){
-  if(p.available() >= 3){
+  if(p.available() >= 2){
     if(p.read() == 'H'){
-      int x = p.read(), y = p.read();
-      time = (int)(x<<8|y);
+      //int x = p.read(), y = p.read();
+      //time = (int)(x<<8|y);
+      time = (int)p.read();
     }
+    port.write('A');
+    startFlag = 1;
     //port.clear();
   }
 }
