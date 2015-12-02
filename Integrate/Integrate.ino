@@ -9,7 +9,7 @@ ZumoBuzzer buzzer;
 Pushbutton button(ZUMO_BUTTON);
 LSM303 compass;
 
-#define SPEED          100 // default motor speed 
+#define SPEED          150 // default motor speed 
 #define LIMIT      20000
 
 float red_G, green_G, blue_G; //  RGB values
@@ -47,7 +47,7 @@ void loop()
   timeNow_G = millis() - timeInit_G;
   motors.setSpeeds(motorL_G, motorR_G);
   sendData();
-
+  
   switch ( zoneNumber_G ) {
     case 0:
       startToZone(); // start to zone
@@ -79,6 +79,7 @@ void loop()
     default:
       break;
   }
+  
 
   // 20s経過していたらゾーンを移動
   /*if(timeNow_G - zone_start_time_G >= 20000){
@@ -91,25 +92,27 @@ void sendData()
   static unsigned long timePrev = 0;
  
   if ( timeNow_G - timePrev > 50 ) { // 50msごとにデータ送信
+    /*
     Serial.write('H');
-    /*Serial.write(zoneNumber_G);
+    Serial.write(zoneNumber_G);
     Serial.write(mode_G);
     Serial.write((int)red_G);
     Serial.write((int)green_G);
     Serial.write((int)blue_G);
     */
-
+    //Serial.println(zoneNumber_G);
     /*
     Serial.print(red_G);
     Serial.print(green_G);
     Serial.println(blue_G);
     Serial.println((red_G + green_G + blue_G) /3 ); 
     */
-
-    //Serial.write('S');
-    Serial.write((int)(azimuth) >> 8);
-    Serial.write((int)(azimuth) & 255);
-    timePrev = timeNow_G;
+    if(Serial.read() == 'A') {
+      Serial.write('H');
+      Serial.write((int)(azimuth) >> 8);
+      Serial.write((int)(azimuth) & 255);
+      timePrev = timeNow_G;
+    }
   }
 }
 
