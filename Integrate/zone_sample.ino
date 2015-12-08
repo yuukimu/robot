@@ -52,6 +52,52 @@ void zone()
   //button.waitForButton();
 }
 
+void zone4(){
+  int done = 0;
+  static int count = 0;
+  static int setupFlag = 0;
+  static bool skip = true;
+  unsigned long interval, distance;
+  if(setupFlag == 0){
+    pinMode(trig, OUTPUT);
+    pinMode(echo, INPUT);
+    pinMode(power, mode);
+    digitalWrite(power, HIGH);
+    motors.setSpeeds(0,0);
+    setupFlag = 1;
+  }
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+
+  interval = pulseIn(echo, HIGH, 18000);
+  distance = 340 * interval / 10000 / 2;
+
+  if(skip == true){
+    skip = false;
+  } else {
+    Serial.println(distance);
+    if(distance == 0){
+      digitalWrite(power, LOW);
+      delay(10);
+      digitalWrite(power, HIGH);
+      skip = true;
+    }
+  }
+  if(distance <= 20){
+    count++;
+  } else{
+    count = 0;
+    motors.setSpeeds(0,0);
+  }
+  if(count >= 5){
+    motors.setSpeeds(150, 150);
+  }
+  if(identifyColor(0)){
+    motors.setSpeeds(0,9);
+  }
+}
+
 void zone6(){
   int done;
    switch ( mode_G ) {
@@ -89,8 +135,6 @@ void zone6(){
       break;
   }
 }
-
-
 
 int steadyState( unsigned long period )
 {

@@ -20,6 +20,12 @@ int motorR_G, motorL_G;  // input values to the motors
 unsigned long zone_start_time_G;
 float azimuth = 0;  // 角度
 
+/********* zone4 **********/
+const int trig = 7
+const int echo = 8
+const int power = 13
+/**************************/
+
 void setup()
 {
   Serial.begin(9600);
@@ -62,7 +68,7 @@ void loop()
       zone(); // zone 3
       break;
     case 4:
-      zone(); // zone 4
+      zone4(); // zone 4
       break;
     case 5:
       zone(); // zone 5
