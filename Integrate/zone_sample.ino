@@ -53,49 +53,76 @@ void zone()
 }
 
 void zone4(){
-  int done = 0;
-  static int count = 0;
+  static long count = 0;
   static int setupFlag = 0;
   static bool skip = true;
   unsigned long interval, distance;
   if(setupFlag == 0){
     pinMode(trig, OUTPUT);
     pinMode(echo, INPUT);
-    pinMode(power, mode);
+    pinMode(power, OUTPUT);
     digitalWrite(power, HIGH);
-    motors.setSpeeds(0,0);
+    mode_G = 0;
+    // motorR_G = SPEED;
+    // motorL_G = -SPEED;
     setupFlag = 1;
   }
+  // if(setupFlag==1){
+  //   if(steadyState(500)){
+  //     motorR_G = 100;
+  //     motorL_G = -100;
+  //     setupFlag++;
+  //   }
+  // }
   digitalWrite(trig, HIGH);
   delayMicroseconds(10);
   digitalWrite(trig, LOW);
 
   interval = pulseIn(echo, HIGH, 18000);
   distance = 340 * interval / 10000 / 2;
-
+  //distance = 30;
+Serial.print("distance = ");
+Serial.println(distance);
   if(skip == true){
     skip = false;
   } else {
-    Serial.println(distance);
+    //Serial.println(distance);
     if(distance == 0){
       digitalWrite(power, LOW);
-      delay(10);
-      digitalWrite(power, HIGH);
-      skip = true;
+      //if(steadyState(10)){
+        digitalWrite(power, HIGH);
+        skip = true;
+      //}
     }
   }
-  if(distance <= 20){
-    count++;
-  } else{
-    count = 0;
-    motors.setSpeeds(0,0);
+  if(steadyState(400)) setupFlag = 2;
+  if(setupFlag == 2){
+  switch (mode_G) {
+      case 0:
+        mode_G = 1;
+        break;
+      case 1:
+        motorR_G = 200;
+        motorL_G = -SPEED;
+        //motors.setSpeeds(motorL_G, motorR_G);
+        if(distance <= 35) mode_G = 2;
+        Serial.println(mode_G);
+        break;
+      case 2:
+        motorR_G = SPEED;
+        motorL_G = SPEED;
+        //motors.setSpeeds(motorL_G, motorR_G);
+        if(distance > 25){
+          count = 0;
+          mode_G = 0;
+        }
+        Serial.println(mode_G);
+        break;
+      default:
+      break;
   }
-  if(count >= 5){
-    motors.setSpeeds(150, 150);
   }
-  if(identifyColor(0)){
-    motors.setSpeeds(0,9);
-  }
+  //motors.setSpeeds(motorL_G, motorR_G);
 }
 
 void zone6(){

@@ -21,9 +21,9 @@ unsigned long zone_start_time_G;
 float azimuth = 0;  // 角度
 
 /********* zone4 **********/
-const int trig = 7
-const int echo = 8
-const int power = 13
+const int trig = 2;
+const int echo = 4;
+const int power = 13;
 /**************************/
 
 void setup()
@@ -36,7 +36,7 @@ void setup()
   setupColorSensor(); // カラーセンサーのsetup
   CalibrationColorSensor(); // カラーセンサーのキャリブレーション
   setupCompass(); // 地磁気センサーのsetup
-  CalibrationCompass(); // 地磁気センサーのキャリブレーション
+  // CalibrationCompass(); // 地磁気センサーのキャリブレーション
   buzzer.play(">g32>>c32");
   zoneNumber_G = 0;
   mode_G = 0;
@@ -51,7 +51,12 @@ void loop()
   readRGB();
   clearInterrupt();
   timeNow_G = millis() - timeInit_G;
+Serial.print("R = ");
+Serial.println(motorR_G);
+Serial.print("L = ");
+Serial.println(motorL_G); 
   motors.setSpeeds(motorL_G, motorR_G);
+//motors.setSpeeds(SPEED, -SPEED);
   sendData();
   
   switch ( zoneNumber_G ) {
@@ -85,7 +90,8 @@ void loop()
     default:
       break;
   }
-  
+// Serial.print("zone = ");
+// Serial.println(zoneNumber_G);
 
   // 20s経過していたらゾーンを移動
   /*if(timeNow_G - zone_start_time_G >= 20000){
