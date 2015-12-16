@@ -53,6 +53,7 @@ void zone()
 }
 
 void zone4(){
+  static int speed = SPEED;
   static long count = 0;
   static int setupFlag = 0;
   static bool skip = true;
@@ -95,33 +96,63 @@ Serial.println(distance);
       //}
     }
   }
-  if(steadyState(400)) setupFlag = 2;
-  if(setupFlag == 2){
+  //if(steadyState(500)) setupFlag = 2;
+  // if(setupFlag == 2){
   switch (mode_G) {
       case 0:
-        mode_G = 1;
+        if(steadyState(500)){
+          setupFlag = 2;
+          mode_G = 1;
+        }
         break;
       case 1:
-        motorR_G = 200;
-        motorL_G = -SPEED;
+        motorR_G = 150;
+        motorL_G = 150;
+        if(steadyState(1000)) mode_G = 2;
         //motors.setSpeeds(motorL_G, motorR_G);
-        if(distance <= 35) mode_G = 2;
+        if(distance <= 35) mode_G = 3;
+        if(identifyColor(0)){
+          mode_G = 4;
+        }
         Serial.println(mode_G);
         break;
       case 2:
-        motorR_G = SPEED;
-        motorL_G = SPEED;
+        motorR_G = 140;
+        motorL_G = -140;
+        if(distance <= 35) mode_G = 3;
+        if(steadyState(1500)) mode_G = 1;
+        if(identifyColor(0)){
+          mode_G = 4;
+        }
+        break;
+      case 3:
+        motorR_G = 140;
+        motorL_G = 140;
+        if(identifyColor(0)){
+          mode_G = 4;
+        }
         //motors.setSpeeds(motorL_G, motorR_G);
-        if(distance > 25){
+        if(distance > 35){
           count = 0;
-          mode_G = 0;
+          mode_G = 1;
         }
         Serial.println(mode_G);
+        break;
+      case 4:
+        motorR_G = -SPEED;
+        motorL_G = -SPEED;
+        // if(identifyColor(0)){
+        //   motorR_G = -speed;
+        // motorL_G = -speed;
+        // }
+        if(steadyState(800)){
+          mode_G = 1;
+        }
         break;
       default:
       break;
   }
-  }
+  //}
   //motors.setSpeeds(motorL_G, motorR_G);
 }
 
@@ -133,7 +164,7 @@ void zone6(){
       mode_G = 1;
       break;
     case 1: // ライントレース（図形を検知するまで）
-      goStraight();
+      goStraight6();
       done = identifyColor( 3 );
       if ( done == 1 ) {
         mode_G = 3;

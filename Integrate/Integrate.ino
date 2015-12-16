@@ -9,8 +9,7 @@ ZumoBuzzer buzzer;
 Pushbutton button(ZUMO_BUTTON);
 LSM303 compass;
 
-#define SPEED          150 // default motor speed 
-#define LIMIT      20000
+#define SPEED          155 // default motor speed 
 
 float red_G, green_G, blue_G; //  RGB values
 int zoneNumber_G; // zone number
