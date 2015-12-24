@@ -9,7 +9,7 @@ ZumoBuzzer buzzer;
 Pushbutton button(ZUMO_BUTTON);
 LSM303 compass;
 
-#define SPEED          155 // default motor speed 
+#define SPEED          150 // default motor speed 
 
 float red_G, green_G, blue_G; //  RGB values
 int zoneNumber_G; // zone number
@@ -17,7 +17,7 @@ int mode_G; // mode in each zone
 unsigned long timeInit_G, timeNow_G; // start time, current time, 
 int motorR_G, motorL_G;  // input values to the motors
 unsigned long zone_start_time_G;
-float azimuth = 0;  // 角度
+float azimuth = 0, start_angle=0;  // 角度
 
 /********* zone4 **********/
 const int trig = 2;
@@ -27,7 +27,7 @@ const int power = 13;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(57600);
   Wire.begin();
 
   button.waitForButton();
@@ -35,7 +35,7 @@ void setup()
   setupColorSensor(); // カラーセンサーのsetup
   CalibrationColorSensor(); // カラーセンサーのキャリブレーション
   setupCompass(); // 地磁気センサーのsetup
-  // CalibrationCompass(); // 地磁気センサーのキャリブレーション
+  CalibrationCompass(); // 地磁気センサーのキャリブレーション
   buzzer.play(">g32>>c32");
   zoneNumber_G = 0;
   mode_G = 0;
@@ -50,14 +50,9 @@ void loop()
   readRGB();
   clearInterrupt();
   timeNow_G = millis() - timeInit_G;
-Serial.print("R = ");
-Serial.println(motorR_G);
-Serial.print("L = ");
-Serial.println(motorL_G); 
   motors.setSpeeds(motorL_G, motorR_G);
-//motors.setSpeeds(SPEED, -SPEED);
   sendData();
-  
+  zoneNumber_G = 6;
   switch ( zoneNumber_G ) {
     case 0:
       startToZone(); // start to zone
@@ -89,8 +84,9 @@ Serial.println(motorL_G);
     default:
       break;
   }
-// Serial.print("zone = ");
-// Serial.println(zoneNumber_G);
+  // Serial.print("start_angle: ");
+  // Serial.println(start_angle);
+  Serial.println(azimuth);
 
   // 20s経過していたらゾーンを移動
   /*if(timeNow_G - zone_start_time_G >= 20000){
@@ -118,11 +114,17 @@ void sendData()
     Serial.println(blue_G);
     Serial.println((red_G + green_G + blue_G) /3 ); 
     */
-    if(Serial.read() == 'A') {
-      Serial.write('H');
-      Serial.write((int)(azimuth) >> 8);
-      Serial.write((int)(azimuth) & 255);
-      timePrev = timeNow_G;
+    if(zoneNumber_G == 6){
+      if(Serial.read() == 'A') {
+        int angle = int(azimuth - start_angle);
+        Serial.write('H');
+        Serial.write((int)angle >> 8);
+        Serial.write((int)angle & 255);
+        Serial.write((int)red_G);
+        Serial.write((int)green_G);
+        Serial.write((int)blue_G);
+        timePrev = timeNow_G;
+      }
     }
   }
 }

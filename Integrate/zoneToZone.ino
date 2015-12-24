@@ -226,15 +226,12 @@ void linetracePID6()
   diffSP  = map(diff, -100.0, 100.0, -SPEED, SPEED );
 
   speedDiff = Kp * errorSP + Kd * diffSP;
-/*
-  motorL_G = SPEED - speedDiff;
-  motorR_G = SPEED + speedDiff;
-*/
-if (speedDiff > 0) {
+
+  if (speedDiff > 0) {
     motorL_G = SPEED - speedDiff;
     motorR_G = SPEED;
-}
-else {
+  }
+  else {
     motorL_G = SPEED;
     motorR_G = SPEED + speedDiff;
   }

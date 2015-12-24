@@ -64,40 +64,25 @@ void zone4(){
     pinMode(power, OUTPUT);
     digitalWrite(power, HIGH);
     mode_G = 0;
-    // motorR_G = SPEED;
-    // motorL_G = -SPEED;
     setupFlag = 1;
   }
-  // if(setupFlag==1){
-  //   if(steadyState(500)){
-  //     motorR_G = 100;
-  //     motorL_G = -100;
-  //     setupFlag++;
-  //   }
-  // }
   digitalWrite(trig, HIGH);
   delayMicroseconds(10);
   digitalWrite(trig, LOW);
 
   interval = pulseIn(echo, HIGH, 18000);
   distance = 340 * interval / 10000 / 2;
-  //distance = 30;
 Serial.print("distance = ");
 Serial.println(distance);
   if(skip == true){
     skip = false;
   } else {
-    //Serial.println(distance);
     if(distance == 0){
       digitalWrite(power, LOW);
-      //if(steadyState(10)){
-        digitalWrite(power, HIGH);
-        skip = true;
-      //}
+      digitalWrite(power, HIGH);
+      skip = true;
     }
   }
-  //if(steadyState(500)) setupFlag = 2;
-  // if(setupFlag == 2){
   switch (mode_G) {
       case 0:
         if(steadyState(500)){
@@ -109,7 +94,6 @@ Serial.println(distance);
         motorR_G = 150;
         motorL_G = 150;
         if(steadyState(1000)) mode_G = 2;
-        //motors.setSpeeds(motorL_G, motorR_G);
         if(distance <= 35) mode_G = 3;
         if(identifyColor(0)){
           mode_G = 4;
@@ -131,7 +115,6 @@ Serial.println(distance);
         if(identifyColor(0)){
           mode_G = 4;
         }
-        //motors.setSpeeds(motorL_G, motorR_G);
         if(distance > 35){
           count = 0;
           mode_G = 1;
@@ -141,10 +124,6 @@ Serial.println(distance);
       case 4:
         motorR_G = -SPEED;
         motorL_G = -SPEED;
-        // if(identifyColor(0)){
-        //   motorR_G = -speed;
-        // motorL_G = -speed;
-        // }
         if(steadyState(800)){
           mode_G = 1;
         }
@@ -152,16 +131,15 @@ Serial.println(distance);
       default:
       break;
   }
-  //}
-  //motors.setSpeeds(motorL_G, motorR_G);
 }
 
 void zone6(){
   int done;
    switch ( mode_G ) {
     case 0: // setupが必要ならここ（必要が無くても形式的に）
-    zone_start_time_G = timeNow_G;
-      mode_G = 1;
+    // zone_start_time_G = timeNow_G;
+      start_angle = averageHeading();
+      mode_G = 3;
       break;
     case 1: // ライントレース（図形を検知するまで）
       goStraight6();
@@ -182,11 +160,9 @@ void zone6(){
       if(identifyColor(0)){
         motors.setSpeeds(0,0);
       }
-       linetracePID6();
-    //   done = identifyColor( 2 );
-    //   if ( done == 1 ) {
-    //     mode_G = 4;
-    //   }
+       // linetracePID6();
+       motorR_G = 0;
+       motorL_G = 0;
        break;
 
     default:

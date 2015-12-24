@@ -22,45 +22,69 @@ Serial port;
 int position_x = 400;
 int position_y = 850;
 int azimuth = -1;
+int red_G = 0, green_G = 0, blue_G = 0;
 int lange = 2;
-int stage_w = 800, stage_h = 900;
+int inByte = 0;
+long timeNow, timePrev;
 
 public void setup() {
   
   background(255);
   strokeWeight(10);
   textSize(25);
-  port = new Serial(this,"/dev/tty.usbserial-A400FRLO",9600); 
+  port = new Serial(this,"/dev/tty.usbserial-AL00FMHT",57600); 
   port.clear();
 
 }
 
 public void draw() {
-  //background(255);
-  stroke(0); lights();
+  noStroke();
+  fill(255);
+  rect(360, 450, 100, 200);
+  // stroke(red_G, green_G, blue_G);
+  stroke(30, 170, 250);
   fill(63, 127, 255);
   text(azimuth, 380 , 500);
+  println(azimuth);
   if(azimuth != -1){
-    //line(position_x , position_y, (position_x)+sin(radians(360-azimuth)), (position_y)+2*cos(radians(360-azimuth)));
-    point(position_x, position_y);
-    //if(position_x-20 > 0 && position_x+20 < stage_w)
-      position_x += 4*sin(radians(360-azimuth));
-    //if(position_y-20 > 0 && position_y+20 < stage_h)
-      position_y += 4*cos(radians(360-azimuth));
+    int oldx = position_x;
+    int oldy = position_y;
+    position_x += 1.5f*sin(radians(azimuth));
+    position_y -= 1.5f*cos(radians(azimuth));
+    line(oldx, oldy, position_x, position_y);
+    // point(position_x, position_y);
+  }
+  if(inByte == 0){
+    port.write('A');
+    inByte = 1;
+  }
+  timeNow = millis();
+  if(timeNow - timePrev >= 500){
     port.write('A');
   }
-  delay(50);
+  if(position_x > 800 || position_x < 0 || position_y < 0 || position_y > 900){
+    position_x = 400;
+    position_y = 850;
+    background(255);
+  }
+  delay(80);
 }
 
 public void serialEvent(Serial p) { 
-  if (p.available() >= 3) {
+  if (p.available() >= 6) {
     if(p.read() == 'H'){
       int h = p.read(), l = p.read();
-      azimuth = (int)(h<<8|l); if(azimuth > 32767) azimuth -= 65536;
+      azimuth = (int)(h<<8|l);
+      if(azimuth > 32767) azimuth -= 65536;
+      red_G = (int)p.read();
+      green_G = (int)p.read();
+      blue_G = (int)p.read();
+      port.write('A');
+      timePrev = millis();
     } 
   }
 }
-  public void settings() {  size(800, 900, OPENGL); }
+  public void settings() {  size(800, 900); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "zone6_p" };
     if (passedArgs != null) {
