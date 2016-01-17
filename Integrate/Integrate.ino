@@ -9,7 +9,7 @@ ZumoBuzzer buzzer;
 Pushbutton button(ZUMO_BUTTON);
 LSM303 compass;
 
-#define SPEED          150 // default motor speed 
+#define SPEED          135 // default motor speed 
 
 float red_G, green_G, blue_G; //  RGB values
 int zoneNumber_G; // zone number
@@ -52,7 +52,7 @@ void loop()
   timeNow_G = millis() - timeInit_G;
   motors.setSpeeds(motorL_G, motorR_G);
   sendData();
-  zoneNumber_G = 6;
+  // zoneNumber_G = 6;
   switch ( zoneNumber_G ) {
     case 0:
       startToZone(); // start to zone
@@ -84,9 +84,7 @@ void loop()
     default:
       break;
   }
-  // Serial.print("start_angle: ");
-  // Serial.println(start_angle);
-  Serial.println(azimuth);
+  // Serial.println(azimuth);
 
   // 20s経過していたらゾーンを移動
   /*if(timeNow_G - zone_start_time_G >= 20000){

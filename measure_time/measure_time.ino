@@ -1,85 +1,45 @@
-#define DISTANCE 10
-const int trig = 7; //Trig ピンをデジタル 7 番に接続
-const int echo = 8;  //Echo ピンをデジタル 8 番に接続
-const int power = 13; //Vccを13番に接続
-//unsigned long interval; //Echoのパルス幅
-unsigned long timeInit, timeStart, timeNow, timeEnd;
-int mode = 0;
-int count = 0;
-int inByte = 0;   // 送信要求を確認
+const int trig = 2;
+const int echo = 4;
+const int power = 13;
+int inByte = 0;
 
-void send_data(unsigned long data);
-
-void setup(){
+void setup()
+{
   Serial.begin(9600);
-  pinMode(trig, OUTPUT); // 7番ポートを出力に設定
-  pinMode(echo, INPUT); // 8番ポートを入力に設定™
+  pinMode(trig, OUTPUT);  
+  pinMode(echo, INPUT);
   pinMode(power, OUTPUT);
   digitalWrite(power, HIGH);
-  timeInit = millis();
 }
 
-void loop(){
-  unsigned long interval, l; //Echoのパルス幅
-  static bool skip = true;
-  int sensorValue = analogRead(A0);
-  float vo = sensorValue * (5.0/1024.0);
-  float temp = (vo*1000-600)/10;
-  digitalWrite(trig, HIGH); //10μs のパルスをセンサーに入力
-  delayMicroseconds(10);
-  digitalWrite(trig, LOW); // 7番ポートにLOWを出力
-  
-  interval = pulseIn(echo, HIGH, 18000);  //Echo信号がHIGHである時間(μs)を計測
-  //float c = 331.5 + 0.61 * temp; // 音速を25℃の場合に設定
-  l = 340 * interval / 10000 / 2; // 距離を計測(cm)
-  Serial.println(l);
-  if (skip == true) {
+void loop() {
+unsigned long interval, distance; 
+static bool skip = true;
+digitalWrite(trig, HIGH); 
+delayMicroseconds(10); 
+digitalWrite(trig, LOW);
+
+interval = pulseIn(echo, HIGH, 18000);
+distance = 340 * interval / 10000 / 2;
+
+if (skip == true) {
     skip = false;
   } else {
-      Serial.println("xxxxx");
-      if (l == 0) {
+      Serial.println(distance);
+      if (distance == 0) {
         digitalWrite(power, LOW);
         delay(10);
         digitalWrite(power, HIGH);
         skip = true;
+      } else if(distance > 20 && distance < 30) {
+        send_data(1);
+        delay(3000);
+      } else if(distance > 0 && distance < 10) {
+        send_data(2);
+        delay(3000);
       }
   }
-  if(l <= DISTANCE && l > 0 && mode == 0){
-    count++;
-    Serial.println("count+");
-    if(count >= 10){
-      mode = 1;
-      count = 0;
-    }
-  }
-  else if(l > DISTANCE && mode == 1){
-    //Serial.println("START!!");
-    //timeStart = millis() - timeInit;
-    timeStart = millis();
-    mode = 2;
-    //delay(300);
-  }
-  else if(l <= DISTANCE && l > 0 && mode == 2){
-    count++;
-    if(count >= 4){
-      timeEnd = timeNow - timeStart; 
-      //Serial.print("GOAL: ");
-      send_data(timeEnd); // Processingにデータを送信
-      delay(700);
-      mode = 0;
-      count = 0;
-    }
-  } 
-  else if(mode == 2){
-    //timeNow = millis() - timeInit;
-    timeNow = millis();
-    send_data(timeNow-timeStart);
-    //Serial.println(l);
-  }
-  else{
-    Serial.println("aaaa");
-    count = 0;
-  }
+  delay(60);
 }
 
 void send_data(unsigned long data){
@@ -87,7 +47,6 @@ void send_data(unsigned long data){
     inByte = Serial.read();
     Serial.write('H');
     Serial.write(data);
-    //Serial.write(data >> 8);
-    //Serial.write(data & 8);
+    inByte = 1;
   }
 }

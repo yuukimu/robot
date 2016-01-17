@@ -114,8 +114,8 @@ void goStraight()
 }
 void goStraight6()
 {
-  motorL_G = 120;
-  motorR_G =120;
+  motorL_G = 100;
+  motorR_G =100;
 }
 
 // 黒白の境界に沿ってライントレース
@@ -212,9 +212,9 @@ void linetracePID6()
   float diff, diffSP;
   float speedDiff;
 
-  float target = 55;
-  float Kp = 2.5;
-  float Kd = 2.0;
+  float target = 60;
+  float Kp = 2.7;
+  float Kd = 1.5;
   
   lightNowPD =  (red_G + green_G + blue_G) / 3.0;
   error = lightNowPD - target;

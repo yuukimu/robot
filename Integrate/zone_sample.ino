@@ -139,7 +139,7 @@ void zone6(){
     case 0: // setupが必要ならここ（必要が無くても形式的に）
     // zone_start_time_G = timeNow_G;
       start_angle = averageHeading();
-      mode_G = 3;
+      mode_G = 1;
       break;
     case 1: // ライントレース（図形を検知するまで）
       goStraight6();
@@ -160,9 +160,11 @@ void zone6(){
       if(identifyColor(0)){
         motors.setSpeeds(0,0);
       }
-       // linetracePID6();
-       motorR_G = 0;
-       motorL_G = 0;
+       motorR_G = 120;
+       motorL_G = 120;
+       linetracePID6();
+       // motorR_G = 0;
+       // motorL_G = 0;
        break;
 
     default:
