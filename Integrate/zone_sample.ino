@@ -1,57 +1,3 @@
-void zone()
-{
-  static int count = 0; // 回転の数
-  static int spin = 1;  // 回転か停止かの判断
-
-  switch (mode_G) {
-    case 0:
-       zone_start_time_G = timeNow_G;
-       mode_G = 1;
-       break;
-     case 1:
-       motors.setSpeeds(0, 0);
-       if(steadyState(500))
-         mode_G = 2;
-       break;
-     case 2:
-       motors.setSpeeds(SPEED, SPEED);
-       if(steadyState(500))
-         mode_G = 3;
-        break;
-      case 3:
-        motors.setSpeeds(0, 0);
-        if(steadyState(500))
-          mode_G = 4;
-        break;
-      case 4:
-        if(count < zoneNumber_G && spin == 1){  // 200ms回転
-          motors.setSpeeds(-SPEED, SPEED);
-        if(steadyState(200))
-          spin = 0;
-        }
-        else if(count < zoneNumber_G && spin == 0){ // 200ms停止
-          motors.setSpeeds(0, 0);
-          if(steadyState(200)){
-            spin = 1;
-            count++;
-          }
-        }
-        else if(count >= zoneNumber_G){
-          mode_G = 5;
-        }
-        break;
-      case 5:
-        zoneNumber_G = 8;  
-        mode_G = 0;
-        spin = 1;
-        count = 0;
-        break;
-      default:
-        break;
-  }
-  //button.waitForButton();
-}
-
 void zone4(){
   static int speed = SPEED;
   static long count = 0;
@@ -125,7 +71,8 @@ Serial.println(distance);
         motorR_G = -SPEED;
         motorL_G = -SPEED;
         if(steadyState(800)){
-          mode_G = 1;
+          // mode_G = 1;
+          mode_G = 2;
         }
         break;
       default:
@@ -163,10 +110,7 @@ void zone6(){
        motorR_G = 120;
        motorL_G = 120;
        linetracePID6();
-       // motorR_G = 0;
-       // motorL_G = 0;
        break;
-
     default:
       break;
   }
