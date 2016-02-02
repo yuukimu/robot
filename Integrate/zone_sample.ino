@@ -107,8 +107,8 @@ void zone6(){
       if(identifyColor(0)){
         motors.setSpeeds(0,0);
       }
-       motorR_G = 120;
-       motorL_G = 120;
+       motorR_G = 100;
+       motorL_G = 100;
        linetracePID6();
        break;
     default:
